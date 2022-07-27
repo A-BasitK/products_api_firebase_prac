@@ -9,4 +9,4 @@ class AddInvoiceLoaded extends AddInvoiceFirestoreState {}
 class AddInvoiceError extends AddInvoiceFirestoreState {
   var err;
   AddInvoiceError({required this.err});
-}
+}//kkk
