@@ -12,24 +12,31 @@ class AddInvoiceFirestoreCubit extends Cubit<AddInvoiceFirestoreState> {
   addInvoiceData(List<ProductModel> productsAllData, var totalPrice,
       var discount, var netTotal) async {
     emit(AddInvoiceLoading());
-    var id = FirebaseFirestore.instance.collection("orders").doc().id;
-    await FirebaseFirestore.instance.collection("orders").doc(id).set({
-      "Total Price": totalPrice,
-      "Discount": discount,
-      "Net total": netTotal,
-    });
-    for (var add in productsAllData) {
-      await FirebaseFirestore.instance
-          .collection("orders")
-          .doc(id)
-          .collection("Products")
-          .add({
-        "Product Name": add.name,
-        "Price": add.price,
-        "Quantity": add.qunatity,
+    try {
+      var map = List<Map>.from(productsAllData.map((e) => e.toJson()));
+      await FirebaseFirestore.instance.collection("orders").add({
+        "TotalPrice": totalPrice,
+        "Discount": discount,
+        "Nettotal": netTotal,
+        "status": "pending",
+        "Products": map,
       });
+      print("data Loaded");
+      emit(AddInvoiceLoaded());
+    } catch (e) {
+      emit(AddInvoiceError(err: e));
     }
-    print("data Loaded");
-    emit(AddInvoiceLoaded());
+
+    // for (var add in productsAllData) {
+    //   await FirebaseFirestore.instance
+    //       .collection("orders")
+    //       .doc(id)
+    //       .collection("Products")
+    //       .add({
+    //     "Product Name": add.name,
+    //     "Price": add.price,
+    //     "Quantity": add.qunatity,
+    //   });
+    // }
   }
 }

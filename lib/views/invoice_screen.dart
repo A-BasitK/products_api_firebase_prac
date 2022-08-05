@@ -6,8 +6,9 @@ import 'package:products_api_firebase_prac/views/checkout_screen.dart';
 import '../models/products_model/products_model.dart';
 
 class InvoiceScreen extends StatefulWidget {
-  List<ProductModel> productsInvoice;
-  InvoiceScreen({Key? key, required this.productsInvoice});
+  final List<ProductModel> productsInvoice;
+  const InvoiceScreen({Key? key, required this.productsInvoice})
+      : super(key: key);
 
   @override
   State<InvoiceScreen> createState() => _InvoiceScreenState();
@@ -19,6 +20,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.orangeAccent,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CheckOutScreen()));
+                },
+                icon: const Icon(Icons.shopping_cart_checkout_outlined))
+          ],
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
@@ -31,30 +42,31 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               if (state is AddInvoiceLoaded) {
                 print("loaded");
               }
-                return InkWell(
-                  child: Container(
-                    height: 40,
-                    width: 200,
-                    decoration: const BoxDecoration(
-                        color: Colors.orangeAccent,
-                        borderRadius: BorderRadius.all(Radius.circular(15))),
-                    child: const Center(
-                        child: Text(
-                      "CheckOut",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                    )),
-                  ),
-                  onTap: () {
-                    context.read<AddInvoiceFirestoreCubit>().addInvoiceData(
-                        widget.productsInvoice,
-                        getTotalPrice(),
-                        20,
-                        getTotalPrice() - (20 / 100) * getTotalPrice());
-                    Navigator.push(context, MaterialPageRoute(builder: (index)=>CheckOutScreen()));
-                  },
-                );
-
+              return InkWell(
+                child: Container(
+                  height: 40,
+                  width: 200,
+                  decoration: const BoxDecoration(
+                      color: Colors.orangeAccent,
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                  child: const Center(
+                      child: Text(
+                    "CheckOut",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  )),
+                ),
+                onTap: () {
+                  context.read<AddInvoiceFirestoreCubit>().addInvoiceData(
+                      widget.productsInvoice,
+                      getTotalPrice(),
+                      20,
+                      getTotalPrice() - (20 / 100) * getTotalPrice());
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (index) => const CheckOutScreen()));
+                },
+              );
             },
           ),
         ),
@@ -189,7 +201,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             child: Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  "\$${getTotalPrice() - (20 / 100) * getTotalPrice()}",
+                                  "\$${(getTotalPrice() - (20 / 100) * getTotalPrice()).toStringAsFixed(2)}",
                                   style: const TextStyle(fontSize: 18),
                                 )))
                       ],

@@ -6,7 +6,7 @@ abstract class FetchInvoiceFirestoreState {}
 class FetchInvoiceFirestoreInitial extends FetchInvoiceFirestoreState {}
 class FetchInvoiceFirestoreLoading extends FetchInvoiceFirestoreState {}
 class FetchInvoiceFirestoreLoaded extends FetchInvoiceFirestoreState {
-  List<Order> allorders;
+  List<OrderModel> allorders;
   FetchInvoiceFirestoreLoaded({required this.allorders});
 }
 class FetchInvoiceFirestoreError extends FetchInvoiceFirestoreState {

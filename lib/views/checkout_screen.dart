@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:products_api_firebase_prac/controllers/firestore_cubits/fetch_invoice_firestore/fetch_invoice_firestore_cubit.dart';
+import 'package:products_api_firebase_prac/views/product_details.dart';
 
 class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({Key? key}) : super(key: key);
@@ -15,12 +16,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orangeAccent,
-        title: Text("CheckOut"),
+        title: const Text("CheckOut"),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: BlocBuilder<FetchInvoiceFirestoreCubit,
-            FetchInvoiceFirestoreState>(
+        child:
+            BlocBuilder<FetchInvoiceFirestoreCubit, FetchInvoiceFirestoreState>(
           builder: (context, state) {
             if (state is FetchInvoiceFirestoreLoading) {
               print("Loading");
@@ -30,14 +31,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   itemCount: state.allorders.length,
                   itemBuilder: (context, index) {
                     return Container(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                           horizontal: 18, vertical: 10),
-                      margin: EdgeInsets.symmetric(vertical: 10),
-                      height: 130,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      height: 140,
                       decoration: BoxDecoration(
                           color: Colors.orangeAccent.shade100,
                           borderRadius:
-                              BorderRadius.all(Radius.circular(13))),
+                              const BorderRadius.all(Radius.circular(13))),
                       child: Column(
                         children: [
                           Expanded(
@@ -45,14 +46,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             children: [
                               Expanded(
                                   child: Text(
-                                      "Products Quantity: ${state.allorders[index].productsDataModel.length}",
+                                      "Products Quantity: ${state.allorders[index].data.products.length}",
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16))),
                               Expanded(
                                   child: Align(
                                       alignment: Alignment.centerRight,
-                                      child: Text("Total Price: \$${state.allorders[index].ordersModel.totalPrice.toStringAsFixed(2)}",
+                                      child: Text(
+                                          "Total Price: \$${state.allorders[index].data.totalPrice.toStringAsFixed(2)}",
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16))))
@@ -66,15 +68,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             children: [
                               Expanded(
                                   child: Text(
-                                "Discount: ${state.allorders[index].ordersModel.discount}%",
+                                "Discount: ${state.allorders[index].data.discount}%",
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                                    fontWeight: FontWeight.bold, fontSize: 16),
                               )),
                               Expanded(
                                   child: Align(
                                       alignment: Alignment.centerRight,
-                                      child: Text("Net Total: \$${state.allorders[index].ordersModel.netTotal}",
+                                      child: Text(
+                                          "Net Total: \$${(state.allorders[index].data.nettotal).toStringAsFixed(2)}",
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16))))
@@ -86,57 +88,169 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           Expanded(
                               child: Align(
                                   alignment: Alignment.center,
-                                  child: Container(
-                                    height: 25,
-                                    width: 70,
-                                    decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20))),
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "Pending",
-                                        style: TextStyle(
-                                            color: Colors.yellow,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
+                                  child: BlocBuilder<FetchInvoiceFirestoreCubit,
+                                      FetchInvoiceFirestoreState>(
+                                    builder: (context, state) {
+                                      if (state
+                                          is FetchInvoiceFirestoreLoaded) {
+                                        return Container(
+                                          height: 25,
+                                          width: 70,
+                                          decoration: const BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20))),
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              state
+                                                  .allorders[index].data.status,
+                                              style: TextStyle(
+                                                  color: state.allorders[index]
+                                                              .data.status ==
+                                                          "pending"
+                                                      ? Colors.orange
+                                                      : state
+                                                                  .allorders[
+                                                                      index]
+                                                                  .data
+                                                                  .status ==
+                                                              "Confirm"
+                                                          ? Colors.green
+                                                          : Colors.red,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      return const SizedBox(
+                                        height: 0,
+                                        width: 0,
+                                      );
+                                    },
                                   ))),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           Expanded(
-                              child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10),
+                              child: Align(
+                            alignment: Alignment.center,
                             child: Row(
                               children: [
                                 Expanded(
-                                    child: Text(
-                                  "Cancel",
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 19),
-                                )),
-                                Expanded(
-                                    child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    "Confirm",
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 19),
+                                    child: InkWell(
+                                  child: const Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Icon(
+                                      Icons.move_up_rounded,
+                                      color: Colors.white,
+                                      size: 36,
+                                    ),
                                   ),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        (MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProductDetailsScreen(
+                                                  orderId: state
+                                                      .allorders[index].orderId,
+                                                ))));
+                                  },
+                                )),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                Expanded(
+                                    child: InkWell(
+                                  child: const Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Icon(
+                                      Icons.delete_outlined,
+                                      color: Colors.white,
+                                      size: 36,
+                                    ),
+                                  ),
+                                  onTap: () {},
                                 ))
                               ],
                             ),
+                          )),
+                          Expanded(child: BlocBuilder<
+                              FetchInvoiceFirestoreCubit,
+                              FetchInvoiceFirestoreState>(
+                            builder: (context, state) {
+                              if (state is FetchInvoiceFirestoreLoaded) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                          child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: InkWell(
+                                          child: const Text(
+                                            "Cancel",
+                                            style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 19),
+                                          ),
+                                          onTap: () {
+                                            context
+                                                .read<
+                                                    FetchInvoiceFirestoreCubit>()
+                                                .updateStatus(
+                                                    status: 'Cancel',
+                                                    productId: state
+                                                        .allorders[index]
+                                                        .orderId);
+                                          },
+                                        ),
+                                      )),
+                                      Expanded(
+                                          child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: InkWell(
+                                            child: const Text(
+                                              "Confirm",
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 19),
+                                            ),
+                                            onTap: () {
+                                              context
+                                                  .read<
+                                                      FetchInvoiceFirestoreCubit>()
+                                                  .updateStatus(
+                                                      status: 'Confirm',
+                                                      productId: state
+                                                          .allorders[index]
+                                                          .orderId);
+                                            },
+                                          ),
+                                        ),
+                                      ))
+                                    ],
+                                  ),
+                                );
+                              }
+                              return const SizedBox(
+                                height: 0,
+                                width: 0,
+                              );
+                            },
                           )),
                         ],
                       ),
                     );
                   });
             }
-            return Container(
+            return const SizedBox(
               height: 0,
               width: 0,
             );

@@ -1,39 +1,93 @@
 // To parse this JSON data, do
 //
-//     final ordersModel = ordersModelFromJson(jsonString);
+//     final orderModel = orderModelFromMap(jsonString);
 import 'dart:convert';
 
-import 'package:products_api_firebase_prac/models/products_model/firebase_product_models/products_data_model.dart';
+OrderModel orderModelFromMap(String str) => OrderModel.fromMap(json.decode(str));
 
-OrdersModel ordersModelFromJson(String str) => OrdersModel.fromJson(json.decode(str));
+String orderModelToMap(OrderModel data) => json.encode(data.toMap());
 
-String ordersModelToJson(OrdersModel data) => json.encode(data.toJson());
-class Order
-{
-  OrdersModel ordersModel;
-  List<ProductsDataModel> productsDataModel;
-  Order({required this.productsDataModel,required this.ordersModel});
-}
-class OrdersModel {
-  OrdersModel({
-    required this.totalPrice,
-    required this.discount,
-    required this.netTotal,
+class OrderModel {
+  OrderModel({
+    required this.orderId,
+    required this.data,
   });
 
-  num totalPrice;
- num discount;
-num netTotal;
+  String orderId;
+  Data data;
 
-  factory OrdersModel.fromJson(Map<String, dynamic> json) => OrdersModel(
-    totalPrice: json["Total Price"],
-    discount: json["Discount"],
-    netTotal: json["Net total"],
+  factory OrderModel.fromMap(Map<String, dynamic> json) => OrderModel(
+    orderId: json["orderId"],
+    data: Data.fromMap(json["data"]),
   );
 
-  Map<String, dynamic> toJson() => {
-    "Total Price": totalPrice,
+  Map<String, dynamic> toMap() => {
+    "orderId": orderId,
+    "data": data.toMap(),
+  };
+}
+
+class Data {
+  Data({
+    required this.discount,
+    required this.nettotal,
+    required this.totalPrice,
+    required this.status,
+    required this.products,
+  });
+
+  int discount;
+  double nettotal;
+  double totalPrice;
+  String status;
+  List<Product> products;
+
+
+  factory Data.fromMap(Map<String, dynamic> json) => Data(
+    discount: json["Discount"],
+    nettotal: json["Nettotal"].toDouble(),
+    totalPrice: json["TotalPrice"].toDouble(),
+    status: json["status"],
+    products: List<Product>.from(json["Products"].map((x) => Product.fromMap(x))),
+  );
+
+  Map<String, dynamic> toMap() => {
     "Discount": discount,
-    "Net total": netTotal,
+    "Nettotal": nettotal,
+    "TotalPrice": totalPrice,
+    "status": status,
+    "Products": List<dynamic>.from(products.map((x) => x.toMap())),
+  };
+}
+
+class Product {
+  Product({
+    required this.description,
+    required this.image,
+    required this.name,
+    required this.price,
+    required this.qunatity
+  });
+
+  String description;
+  String image;
+  String name;
+  String price;
+  num qunatity;
+
+  factory Product.fromMap(Map<String, dynamic> json) => Product(
+    description: json["description"],
+    image: json["image_link"],
+    name: json["name"],
+    qunatity: json["quantity"],
+    price: json["price"],
+  );
+
+  Map<String, dynamic> toMap() => {
+    "description": description,
+    "image": image,
+    "name": name,
+    "price": price,
+    'quantity':qunatity
   };
 }
